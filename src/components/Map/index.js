@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { withStyles } from '@material-ui/styles';
 import mapboxgl from 'mapbox-gl';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiY2hvdGluZWMiLCJhIjoiY2s1dXIxbDEyMDNqazNybGwzcTBydmdybyJ9.E0ZzR-BquMw7y5WGatf6XQ';
+mapboxgl.accessToken = 'pk.eyJ1IjoidDB4YSIsImEiOiJjazV5MXJtNmoxM2l5M3BwbzcyYWowYXM3In0.HwMcjS3exgan06ermvYewg';
 
 const styles = theme => ({
   mapContainer: {
