@@ -5,12 +5,14 @@ import { Login } from './components/Login';
 import { Signup } from './components/Signup';
 import { Profile } from './components/Profile';
 
+import '../src/App.css';
+
 const ROUTES = {
-  login: (setRoute) => <Login setRoute={setRoute}/>,
-  Карта: () => <Map/>,
-  Профиль: () => <Profile/>,
-  Выйти: (setRoute) => <Login setRoute={setRoute}/>,
-  регистрация: (setRoute) => <Signup setRoute={setRoute}/>
+  login: (setRoute) => <Login setRoute={setRoute} />,
+  Карта: () => <Map />,
+  Профиль: () => <Profile />,
+  Выйти: (setRoute) => <Login setRoute={setRoute} />,
+  регистрация: (setRoute) => <Signup setRoute={setRoute} />
 };
 
 const Context = React.createContext();
@@ -33,9 +35,9 @@ function App() {
   }
 
   return (
-    <AppProvider value={{login, logout, isLoggedIn}}>
+    <AppProvider value={{ login, logout, isLoggedIn }}>
       <div className="App">
-        {isLoggedIn ? <Header setRoute={setRoute}/>: <></>}
+        {isLoggedIn && <Header setRoute={setRoute} />}
         <section className="App__content">
           {ROUTES[route](setRoute)}
         </section>

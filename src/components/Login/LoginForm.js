@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 export const LoginForm = ({setRoute}) => {
   const classes = useStyles();
-  const preventDefault = event => {
+  const goToRegistrForm = event => {
     event.preventDefault();
     setRoute("регистрация");
   }
@@ -52,7 +52,7 @@ export const LoginForm = ({setRoute}) => {
                 <Grid item xs={12}>
                   <p>
                     Новый пользователь?{' '}
-                    <Link href="#" onClick={preventDefault}>
+                    <Link href="#" onClick={goToRegistrForm}>
                     Зарегистрируйтесь
                     </Link>
                   </p>
