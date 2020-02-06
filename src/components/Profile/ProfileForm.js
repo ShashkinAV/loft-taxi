@@ -19,6 +19,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import DateFnsUtils from '@date-io/date-fns';
 import { MCIcon } from 'loft-taxi-mui-theme';
+import { getCard, getPostCard, fetchGetCardRequest, fetchPostCardRequest, } from '../../modules/main';
+import {shallowEqual, useSelector, useDispatch} from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -49,6 +51,11 @@ const useStyles = makeStyles(theme => ({
 export const ProfileForm = () => {
   const classes = useStyles();
 
+  const postCard = useSelector(getPostCard, shallowEqual);
+  const postCardAction = useSelector(fetchPostCardRequest, shallowEqual);
+
+  const dispatch = useDispatch();
+
   const [selectedDate, handleDateChange] = useState(new Date());
 
   const [values, setValues] = React.useState({
@@ -67,9 +74,24 @@ export const ProfileForm = () => {
     event.preventDefault();
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    dispatch({
+      ...postCardAction,
+      payload: {
+        cardNumber: e.target.cardNumber.value, 
+        expiryDate: e.target.expiryDate.value, 
+        cardName: e.target.userName.value, 
+        cvc: e.target.cvs.value, 
+        token: localStorage.getItem('authToken')
+      }
+    });
+  }
+
   return (
     <Card className={classes.card}>
-      <form>
+      <form onSubmit={onSubmit}>
         <Grid>
           <Grid item xs={12} align='center' className={classes.gridHeader}>
             <Typography variant='h4' component='h1'>
@@ -127,6 +149,7 @@ export const ProfileForm = () => {
                     </InputLabel>
                     <Input
                       id="cvs"
+                      name="cvs"
                       type={values.showPassword ? 'text' : 'password'}
                       value={values.password}
                       onChange={handleChange('password')}

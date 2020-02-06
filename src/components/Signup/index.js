@@ -34,7 +34,7 @@ export const Signup = ({setRoute}) => {
             <Logo white animated />
           </Grid>
           <Grid item xs={3}>
-            <SignupForm setRoute={setRoute}/>
+            <SignupForm setRoute={setRoute} className={'signupForm'}/>
           </Grid>
        </Grid>
     </div>

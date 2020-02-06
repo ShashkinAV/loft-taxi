@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const Login = ({setRoute}) => {
+export const Login = () => {
   const classes = useStyles();
 
   return (
@@ -34,7 +34,7 @@ export const Login = ({setRoute}) => {
             <Logo white animated />
           </Grid>
           <Grid item xs={3}>
-            <LoginForm setRoute={setRoute}/>
+            <LoginForm/>
           </Grid>
        </Grid>
     </div>

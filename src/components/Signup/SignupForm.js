@@ -1,11 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { getRegister, fetchRegisterRequest } from '../../modules/main';
+import {shallowEqual, useSelector, useDispatch} from 'react-redux';
+import history from '../../history';
+
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -24,16 +28,39 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const SignupForm = ({setRoute}) => {
+export const SignupForm = () => {
   const classes = useStyles();
-  const goToLoginForm = event => {
+
+  const register = useSelector(getRegister, shallowEqual);
+  const registerAction = useSelector(fetchRegisterRequest, shallowEqual);
+
+  const dispatch = useDispatch();
+  
+  const onSubmit = (event) => {
     event.preventDefault();
-    setRoute("login");
+
+    dispatch({
+      ...registerAction,
+      payload: {
+        email: event.target.email.value,
+        password: event.target.password.value,
+        name: event.target.name.value,
+        surname: event.target.scondName.value,
+      }
+    })
+
+    console.log(register);
+  }
+
+  if (register && register.success && JSON.parse(register.success) === true) {
+    localStorage.setItem('authSuccess', register.success);
+    localStorage.setItem('authToken', register.token);
+    history.push('/map');
   }
 
   return (
     <Card className={classes.card}>
-      <form  onSubmit={()=>setRoute("Карта")}>
+      <form  onSubmit={onSubmit}>
         <Grid container>
           <Grid item xs={12}>
             <Typography variant='h4' component='h1'>
@@ -43,7 +70,7 @@ export const SignupForm = ({setRoute}) => {
           <Grid item xs={12}>
             <p>
               Уже зарегистрирован?{' '}
-              <Link href="#" onClick={goToLoginForm}>
+              <Link to={'/login'} >
                 Войти
               </Link>
             </p>
