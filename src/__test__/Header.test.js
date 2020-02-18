@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { shallow } from 'enzyme';
-import { Header } from '../shared/Header/Header';
+import { Header } from '../components/Header/Header.js';
 import renderer from 'react-test-renderer';
 
 describe('Header', () => {

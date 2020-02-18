@@ -16,13 +16,13 @@ const AuthProvider = ({ children }) => {
 
   const getContext = () => {
     return {
-      isLoggedIn, 
-      login, 
+      isLoggedIn,
+      login,
       logout
     }
   }
 
-return <AuthContext.Provider value={getContext()}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={getContext()}>{children}</AuthContext.Provider>
 }
 
 export { AuthContext, AuthProvider }

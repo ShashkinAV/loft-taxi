@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router} from 'react-router';
-import './index.css';
-import App from './App';
+import { Router } from 'react-router';
+import { Provider } from 'react-redux';
 import { theme } from 'loft-taxi-mui-theme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { AuthProvider } from './context/AuthContext';
-import {Provider} from 'react-redux';
 import createStore from './store';
 import history from './history';
+import './index.css';
+import App from './App';
 
 const store = createStore();
 
