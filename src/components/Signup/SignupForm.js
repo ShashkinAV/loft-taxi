@@ -12,91 +12,92 @@ import history from '../../history';
 
 
 const useStyles = makeStyles(theme => ({
-  card: {
-    padding: 50,
-    minWidth: 400,
-    marginTop: 48,
-    marginBottom: 48,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 400,
-    marginBottom: 30
-  },
-  btnGrid: {
-    marginTop: 30
-  }
+	card: {
+		padding: 50,
+		minWidth: 400,
+		marginTop: 48,
+		marginBottom: 48,
+	},
+	title: {
+		fontSize: 36,
+		fontWeight: 400,
+		marginBottom: 30
+	},
+	btnGrid: {
+		marginTop: 30
+	}
 }));
 
 export const SignupForm = () => {
-  const classes = useStyles();
+	const classes = useStyles();
 
-  const register = useSelector(getRegister, shallowEqual);
-  const registerAction = useSelector(fetchRegisterRequest, shallowEqual);
+	const register = useSelector(getRegister, shallowEqual);
+	const registerAction = useSelector(fetchRegisterRequest, shallowEqual);
 
-  const dispatch = useDispatch();
+	const dispatch = useDispatch();
 
-  const onSubmit = (event) => {
-    event.preventDefault();
+	const onSubmit = (event) => {
+		event.preventDefault();
 
-    dispatch({
-      ...registerAction,
-      payload: {
-        email: event.target.email.value,
-        password: event.target.password.value,
-        name: event.target.name.value,
-        surname: event.target.scondName.value,
-      }
-    })
+		dispatch({
+			...registerAction,
+			payload: {
+				email: event.target.email.value,
+				password: event.target.password.value,
+				name: event.target.name.value,
+				surname: event.target.scondName.value,
+			}
+		})
 
-    console.log(register);
-  }
+		console.log(register);
+	}
 
-  if (register && register.success && JSON.parse(register.success) === true) {
-    localStorage.setItem('authSuccess', register.success);
-    localStorage.setItem('authToken', register.token);
-    history.push('/map');
-  }
+	if (register && register.success && JSON.parse(register.success) === true) {
+		console.log(register.success);
+		localStorage.setItem('authSuccess', register.success);
+		localStorage.setItem('authToken', register.token);
+		history.push('/login');
+	}
 
-  return (
-    <Card className={classes.card}>
-      <form onSubmit={onSubmit}>
-        <Grid container>
-          <Grid item xs={12}>
-            <Typography variant='h4' component='h1'>
-              Регистрация
+	return (
+		<Card className={classes.card}>
+			<form onSubmit={onSubmit}>
+				<Grid container>
+					<Grid item xs={12}>
+						<Typography variant='h4' component='h1'>
+							Регистрация
             </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <p>
-              Уже зарегистрирован?{' '}
-              <Link to={'/login'} >
-                Войти
+					</Grid>
+					<Grid item xs={12}>
+						<p>
+							Уже зарегистрирован?{' '}
+							<Link to={'/login'} >
+								Войти
               </Link>
-            </p>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth required name="email" type="email" label="Адрес электронной почты" />
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={6} >
-              <TextField fullWidth required name="name" type="text" label="Имя" margin="normal" />
-            </Grid>
-            <Grid item xs={6} >
-              <TextField fullWidth required name="scondName" type="text" label="Фамилия" margin="normal" />
-            </Grid>
-          </Grid>
-          <Grid item xs={12} >
-            <TextField fullWidth required name="password" type="password" label="Пароль" margin="normal" />
-          </Grid>
-          <Grid item xs={12} align="right" className={classes.btnGrid}>
-            <Button type="submit" variant="contained" color="primary" data-testid="buttonLogin">
-              Зарегистрироваться
+						</p>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField fullWidth required name="email" type="email" label="Адрес электронной почты" />
+					</Grid>
+					<Grid container spacing={2}>
+						<Grid item xs={6} >
+							<TextField fullWidth required name="name" type="text" label="Имя" margin="normal" />
+						</Grid>
+						<Grid item xs={6} >
+							<TextField fullWidth required name="scondName" type="text" label="Фамилия" margin="normal" />
+						</Grid>
+					</Grid>
+					<Grid item xs={12} >
+						<TextField fullWidth required name="password" type="password" label="Пароль" margin="normal" />
+					</Grid>
+					<Grid item xs={12} align="right" className={classes.btnGrid}>
+						<Button type="submit" variant="contained" color="primary" data-testid="buttonLogin">
+							Зарегистрироваться
             </Button>
-          </Grid>
-        </Grid>
+					</Grid>
+				</Grid>
 
-      </form>
-    </Card>
-  );
+			</form>
+		</Card>
+	);
 }

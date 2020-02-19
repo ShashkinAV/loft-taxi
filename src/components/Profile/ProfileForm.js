@@ -1,182 +1,203 @@
 import React from 'react';
-import { useState } from 'react';
-import { shallowEqual, useSelector, useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { MCIcon } from 'loft-taxi-mui-theme';
+import { getCard, getPostCard, fetchGetCardRequest, fetchPostCardRequest, } from '../../modules/card';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import Grid from '@material-ui/core/Grid';
+import { Card, Grid, Paper, Button, Input, InputLabel, InputAdornment, IconButton, Tooltip, FormControl } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import DateFnsUtils from '@date-io/date-fns';
-import { getCard, getPostCard, fetchGetCardRequest, fetchPostCardRequest, } from '../../modules/card';
-
+import history from '../../history';
 
 const useStyles = makeStyles(theme => ({
-  card: {
-    padding: 70,
-    paddingTop: 60,
-    width: 750,
-    maxWidth: '50%',
-    marginTop: 45,
-  },
-  title: {
-    fontSize: 16,
-  },
-  gridHeader: {
-    marginBottom: 40
-  },
-  paper: {
-    position: 'relative',
-    paddingTop: 16,
-    paddingLeft: 32,
-    paddingRight: 32,
-    paddingBottom: 16
-  },
-  btnGrid: {
-    marginTop: 45
-  }
+	card: {
+		padding: 70,
+		paddingTop: 60,
+		width: 750,
+		maxWidth: '50%',
+		marginTop: 45,
+	},
+	title: {
+		fontSize: 16,
+	},
+	gridHeader: {
+		marginBottom: 40
+	},
+	paper: {
+		position: 'relative',
+		paddingTop: 16,
+		paddingLeft: 32,
+		paddingRight: 32,
+		paddingBottom: 16
+	},
+	btnGrid: {
+		marginTop: 45
+	}
 }));
 
+let successAlert = false;
+
 export const ProfileForm = () => {
-  const classes = useStyles();
+	const classes = useStyles();
+	const dispatch = useDispatch();
 
-  const postCard = useSelector(getPostCard, shallowEqual);
-  const postCardAction = useSelector(fetchPostCardRequest, shallowEqual);
+	const [state, setState] = useState({
+		cardNumber: '',
+		expiryDate: new Date(),
+		cardName: '',
+		cvc: ''
+	});
 
-  const dispatch = useDispatch();
+	useEffect(() => {
+		if (card && card.cardNumber) {
+			setState({
+				cardNumber: card && card.cardNumber ? card.cardNumber : '',
+				expiryDate: card && card.expiryDate ? card.expiryDate : new Date(),
+				cardName: card && card.cardName ? card.cardName : '',
+				cvc: card && card.cvc ? card.cvc : '',
+			});
+			console.log(state.expiryDate)
+		}
+	}, []);
 
-  const [selectedDate, handleDateChange] = useState(new Date());
+	const postCard = useSelector(getPostCard, shallowEqual);
+	const card = useSelector(getCard, shallowEqual);
+	const postCardAction = useSelector(fetchPostCardRequest, shallowEqual);
+	const getCardAction = useSelector(fetchGetCardRequest, shallowEqual);
 
-  const [values, setValues] = React.useState({
-    showPassword: false,
-  });
+	const onInputChange = event => {
+		let input = event.target;
+		setState({ ...state, [input.name]: input.value });
+	};
 
-  const handleChange = prop => event => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
+	const onDateInputChange = date => {
+		setState({ ...state, expiryDate: date });
+	};
 
-  const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
-  };
+	const onSubmit = (e) => {
+		e.preventDefault();
 
-  const handleMouseDownPassword = event => {
-    event.preventDefault();
-  };
+		successAlert = true;
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+		console.log(e.target.expiryDate.value);
 
-    dispatch({
-      ...postCardAction,
-      payload: {
-        cardNumber: e.target.cardNumber.value,
-        expiryDate: e.target.expiryDate.value,
-        cardName: e.target.userName.value,
-        cvc: e.target.cvs.value,
-        token: localStorage.getItem('authToken')
-      }
-    });
-  }
+		dispatch({
+			...postCardAction,
+			payload: {
+				cardNumber: e.target.cardNumber.value,
+				expiryDate: e.target.expiryDate.value,
+				cardName: e.target.cardName.value,
+				cvc: e.target.cvc.value,
+				token: localStorage.getItem('authToken')
+			}
+		});
+	}
 
-  return (
-    <Card className={classes.card}>
-      <form onSubmit={onSubmit}>
-        <Grid>
-          <Grid item xs={12} align='center' className={classes.gridHeader}>
-            <Typography variant='h4' component='h1'>
-              Профиль
+	const goToMap = () => {
+		history.push('/map');
+		successAlert = false;
+	}
+
+	return (
+		<Card className={classes.card}>
+			<Grid>
+				<Grid item xs={12} align='center' className={classes.gridHeader}>
+					<Typography variant='h4' component='h1'>
+						Профиль
             </Typography>
-            <Typography className={classes.title} color="textSecondary">
-              Способ оплаты
+					<Typography className={classes.title} color="textSecondary">
+						Способ оплаты
             </Typography>
-          </Grid>
-          <Grid container spacing={4}>
-            <Grid item xs={6} >
-              <Paper elevation={3} className={classes.paper}>
-                <MCIcon />
-                <TextField
-                  fullWidth
-                  required
-                  placeholder="0000 0000 0000 0000"
-                  name="cardNumber"
-                  type="text"
-                  label="Номер карты:"
-                  margin="normal" />
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <DatePicker
-                    placeholder="11/19"
-                    openTo="year"
-                    name="expiryDate"
-                    format="dd/MM/yyyy"
-                    label="Срок действия:"
-                    views={["year", "month", "date"]}
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    margin="normal"
-                    fullWidth
-                    required
-                  />
-                </MuiPickersUtilsProvider>
-              </Paper>
-            </Grid>
-            <Grid item xs={6} >
-              <Paper elevation={3} className={classes.paper}>
-                <TextField
-                  fullWidth
-                  required
-                  name="userName"
-                  type="text"
-                  label="Имя владельца:"
-                  placeholder="USER NAME"
-                  margin="normal" />
-                <FormControl margin="normal" fullWidth>
-                  <InputLabel htmlFor="cvs">
-                    CVS:{' '}
-                    <Tooltip title="3 последние цифры на оборотной стороне карты" arrow>
-                      <HelpOutlineIcon fontSize='small' />
-                    </Tooltip>
-                  </InputLabel>
-                  <Input
-                    id="cvs"
-                    name="cvs"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    onChange={handleChange('password')}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                        >
-                          {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Paper>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} align="center" className={classes.btnGrid}>
-            <Button type="submit" variant="contained" color="primary">
-              Сохранить
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
-    </Card>
-  );
+				</Grid>
+				{(successAlert && postCard && postCard.success && JSON.parse(postCard.success) === true) ?
+					<Grid item xs={12} align='center'>
+						<Typography className={classes.title}>
+							Платёжные данные обновлены. Теперь вы можете заказывать такси.
+              </Typography>
+						<Grid className={classes.btnGrid} onClick={goToMap}>
+							<Button variant="contained" color="primary">
+								Go to card
+                </Button>
+						</Grid>
+					</Grid> :
+					<form onSubmit={onSubmit}>
+						<Grid container spacing={4}>
+							<Grid item xs={6} >
+								<Paper elevation={3} className={classes.paper}>
+									<MCIcon />
+									<TextField
+										label="Номер карты:"
+										placeholder="0000 0000 0000 0000"
+										type="text"
+										name="cardNumber"
+										value={state.cardNumber}
+										onChange={onInputChange}
+										InputLabelProps={{ shrink: true }}
+										margin="normal"
+										fullWidth
+										required
+									/>
+									<MuiPickersUtilsProvider utils={DateFnsUtils}>
+										<DatePicker
+											label="Срок действия:"
+											placeholder="11/19"
+											name="expiryDate"
+											value={state.expiryDate}
+											onChange={onDateInputChange}
+											openTo="year"
+											minDate={new Date()}
+											// views={["year", "month", "date"]}
+											format="dd/MM/yyyy"
+											InputLabelProps={{ shrink: true }}
+											margin="normal"
+											fullWidth
+											required
+										/>
+									</MuiPickersUtilsProvider>
+								</Paper>
+							</Grid>
+							<Grid item xs={6} >
+								<Paper elevation={3} className={classes.paper}>
+									<TextField
+										label="Имя владельца:"
+										placeholder="USER NAME"
+										type="text"
+										name="cardName"
+										value={state.cardName}
+										onChange={onInputChange}
+										InputLabelProps={{ shrink: true }}
+										margin="normal"
+										fullWidth
+										required
+									/>
+									<TextField
+										type="password"
+										label="CVC:"
+										type="text"
+										placeholder="000"
+										name="cvc"
+										value={state.cvc}
+										onChange={onInputChange}
+										InputLabelProps={{ shrink: true }}
+										fullWidth
+										margin="normal"
+										required
+									/>
+								</Paper>
+							</Grid>
+						</Grid>
+						<Grid item xs={12} align="center" className={classes.btnGrid}>
+							<Button type="submit" variant="contained" color="primary">
+								Сохранить
+                </Button>
+						</Grid>
+					</form>
+				}
+			</Grid>
+		</Card>
+	);
 }

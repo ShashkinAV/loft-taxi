@@ -1,29 +1,34 @@
-
 import { createStore, compose, applyMiddleware } from 'redux';
 import createSagaMiddleWare from 'redux-saga';
-import { addressMiddleware } from './modules/address';
-import { authMiddlewares } from './modules/auth';
-import { cardMiddlewares } from './modules/card';
-import { registerMiddlewares } from './modules/register';
-import { routeMiddlewares } from './modules/route';
 import rootReducer from './modules';
+import { rootSaga } from './modules';
+
+const sagaMiddleware = createSagaMiddleWare();
 
 const createAppStore = () => {
-  const store = createStore(
-    rootReducer,
-    compose(
-      applyMiddleware(addressMiddleware),
-      applyMiddleware(authMiddlewares),
-      applyMiddleware(cardMiddlewares),
-      applyMiddleware(registerMiddlewares),
-      applyMiddleware(routeMiddlewares),
-      window.__REDUX_DEVTOOLS_EXTENSION__
-        ? window.__REDUX_DEVTOOLS_EXTENSION__()
-        : noop => noop,
-    ),
-  );
+	const store = createStore(
+		rootReducer,
+		{
+			auth: {
+				authResult: {
+					success: localStorage.getItem('authSuccess')
+				}
+			},
+			// registerResult: {
+			//   success: localStorage.getItem('registerSuccess')
+			// },
+		},
+		compose(
+			applyMiddleware(sagaMiddleware),
+			window.__REDUX_DEVTOOLS_EXTENSION__
+				? window.__REDUX_DEVTOOLS_EXTENSION__()
+				: noop => noop,
+		)
+	);
 
-  return store;
+	sagaMiddleware.run(rootSaga);
+
+	return store;
 };
 
 export default createAppStore;

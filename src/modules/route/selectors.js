@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect'
 
-export const routeListIsLoading = state => state.route.routeListIsLoading
-export const routeListError = state => state.route.routeListError
-export const getRouteList = createSelector(
-    state => state.route.routeList,
-    routeList => routeList,
+export const routeIsLoading = state => state.route.routeIsLoading
+export const routeError = state => state.route.routeError
+export const getRoute = createSelector(
+    state => state.route.routehResult,
+    routehResult => routehResult,
 )
