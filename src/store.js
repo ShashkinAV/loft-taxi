@@ -13,10 +13,7 @@ const createAppStore = () => {
 				authResult: {
 					success: localStorage.getItem('authSuccess')
 				}
-			},
-			// registerResult: {
-			//   success: localStorage.getItem('registerSuccess')
-			// },
+			}
 		},
 		compose(
 			applyMiddleware(sagaMiddleware),
