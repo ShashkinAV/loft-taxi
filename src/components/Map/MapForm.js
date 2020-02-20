@@ -4,7 +4,7 @@ import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, Button, Box, Typography, MenuItem, Select, FormControl, InputLabel } from '@material-ui/core';
 import { getCard, fetchGetCardRequest } from '../../modules/card';
-import { getRoute, fetchRouteRequest } from '../../modules/route';
+import { fetchRouteRequest } from '../../modules/route';
 import { getAddressList, fetchAddressListRequest } from '../../modules/address';
 import history from '../../history';
 
@@ -38,7 +38,6 @@ export const MapForm = () => {
 
 	const cardResult = useSelector(getCard, shallowEqual);
 	const addressList = useSelector(getAddressList, shallowEqual);
-	const routeResult = useSelector(getRoute, shallowEqual);
 	const getCardAction = useSelector(fetchGetCardRequest, shallowEqual);
 	const addressListAction = useSelector(fetchAddressListRequest, shallowEqual);
 	const routeAction = useSelector(fetchRouteRequest, shallowEqual);
@@ -48,7 +47,7 @@ export const MapForm = () => {
 	useEffect(() => {
 		dispatch(getCardAction);
 		dispatch(addressListAction);
-	}, []);
+	},[]);
 
 	const [route, setRoute] = useState({
 		from: '',
@@ -63,18 +62,23 @@ export const MapForm = () => {
 	const onSubmit = e => {
 		e.preventDefault();
 
-		dispatch({
-			...routeAction,
-			payload: {
-				address1: route.from,
-				address2: route.to,
-			}
-		})
+		let address1 = route.from;
+		let address2 = route.to;
 
-		setRoute({
-			...route,
-			isOrdered: true,
-		});
+		if (address1 && address2) {
+			dispatch({
+				...routeAction,
+				payload: {
+					address1: address1,
+					address2: address2,
+				}
+			})
+
+			setRoute({
+				...route,
+				isOrdered: true,
+			});
+		}
 	}
 
 	const onChange = event => {
@@ -136,7 +140,7 @@ export const MapForm = () => {
 						<Typography variant='h4' component='h1' className={classes.typography}>
 							Заказ размещён
             </Typography>
-						<Typography className={classes.title} color="textSecondary" className={classes.typography}>
+						<Typography className={[classes.title, classes.typography]} color="textSecondary">
 							Ваше такси уже едет к вам. Прибудет приблизительно через 10 минут.
             </Typography>
 						<Box className={classes.btnBox}>

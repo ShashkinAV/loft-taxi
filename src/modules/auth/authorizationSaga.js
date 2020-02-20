@@ -16,14 +16,16 @@ export const postAuth = (action) =>
 		body: JSON.stringify(action.payload)
 	}).then(response => response.json());
 
+export function* authSagaWorker(action) {
+	try {
+		const result = yield call(postAuth, action);
+		yield put(fetchAuthSuccess(result));
+	} catch (error) {
+		yield put(fetchAuthFailure(error));
+	}
+}
+
 export function* authSaga() {
 
-	yield takeEvery(fetchAuthRequest, function* (action) {
-		try {
-			const result = yield call(postAuth, action);
-			yield put(fetchAuthSuccess(result));
-		} catch (error) {
-			yield put(fetchAuthFailure(error));
-		}
-	});
+	yield takeEvery(fetchAuthRequest, authSagaWorker);
 }

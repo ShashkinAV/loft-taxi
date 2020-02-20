@@ -11,11 +11,11 @@ import {
 
 const host = 'https://loft-taxi.glitch.me';
 
-const getPayment = () =>
+export const getPayment = () =>
 	fetch(host + '/card?token=' + localStorage.getItem('authToken'))
 		.then(response => response.json());
 
-const postPayment = (action) =>
+export const postPayment = (action) =>
 	fetch(host + '/card', {
 		method: 'POST',
 		headers: {
@@ -25,24 +25,28 @@ const postPayment = (action) =>
 	})
 		.then(response => response.json());
 
+export function* getPaymentSagaWorker() {
+	try {
+		const result = yield call(getPayment);
+		yield put(fetchGetCardSuccess(result));
+	} catch (error) {
+		yield put(fetchGetCardFailure(error));
+	}
+}
+
 export function* getPaymentSaga() {
-	yield takeEvery(fetchGetCardRequest, function* () {
-		try {
-			const result = yield call(getPayment);
-			yield put(fetchGetCardSuccess(result));
-		} catch (error) {
-			yield put(fetchGetCardFailure(error));
-		}
-	});
+	yield takeEvery(fetchGetCardRequest, getPaymentSagaWorker);
+}
+
+export function* postPaymentSagaWorker(action) {
+	try {
+		const result = yield call(postPayment, action);
+		yield put(fetchPostCardSuccess(result));
+	} catch (error) {
+		yield put(fetchPostCardFailure(error));
+	}
 }
 
 export function* postPaymentSaga() {
-	yield takeEvery(fetchPostCardRequest, function* (action) {
-		try {
-			const result = yield call(postPayment, action);
-			yield put(fetchPostCardSuccess(result));
-		} catch (error) {
-			yield put(fetchPostCardFailure(error));
-		}
-	});
+	yield takeEvery(fetchPostCardRequest, postPaymentSagaWorker);
 }

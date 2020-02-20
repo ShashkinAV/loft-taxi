@@ -9,7 +9,6 @@ import {
 const authResult = handleActions(
   {
     [fetchAuthSuccess]: (_state, action) => {
-      console.log("red - " + action.payload);
       return action.payload;
     },
     [fetchAuthRequest]: () => null

@@ -7,19 +7,18 @@ import {
 
 const host = 'https://loft-taxi.glitch.me';
 
-const getAddressList = () =>
-	fetch(host + '/addressList').then(response =>
-		response.json(),
-	);
+export const getAddressList = () =>
+	fetch(host + '/addressList').then(response => response.json());
 
+export function* addressListSagaWorker() {
+	try {
+		const result = yield call(getAddressList);
+		yield put(fetchAddressListSuccess(result));
+	} catch (error) {
+		yield put(fetchAddressListFailure(error));
+	}
+}
 
 export function* addressListSaga() {
-	yield takeEvery(fetchAddressListRequest, function* () {
-		try {
-			const result = yield call(getAddressList);
-			yield put(fetchAddressListSuccess(result));
-		} catch (error) {
-			yield put(fetchAddressListFailure(error));
-		}
-	});
+	yield takeEvery(fetchAddressListRequest, addressListSagaWorker);
 }

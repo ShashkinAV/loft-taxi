@@ -1,15 +1,12 @@
 import React from 'react';
+import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { getRegister, fetchRegisterRequest } from '../../modules/register';
+import { Card, Typography, Grid, Button } from '@material-ui/core';
+import { getRegister, getRegisterIsLoading, fetchRegisterRequest } from '../../modules/register';
 import history from '../../history';
-
+import CustomField from '../CustomField/CustomField';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -25,13 +22,17 @@ const useStyles = makeStyles(theme => ({
 	},
 	btnGrid: {
 		marginTop: 30
+	},
+	gridTopMargin: {
+		marginTop: 15
 	}
 }));
 
-export const SignupForm = () => {
+const SignupForm = () => {
 	const classes = useStyles();
 
 	const register = useSelector(getRegister, shallowEqual);
+	const loading = useSelector(getRegisterIsLoading, shallowEqual);
 	const registerAction = useSelector(fetchRegisterRequest, shallowEqual);
 
 	const dispatch = useDispatch();
@@ -39,17 +40,22 @@ export const SignupForm = () => {
 	const onSubmit = (event) => {
 		event.preventDefault();
 
-		dispatch({
-			...registerAction,
-			payload: {
-				email: event.target.email.value,
-				password: event.target.password.value,
-				name: event.target.name.value,
-				surname: event.target.scondName.value,
-			}
-		})
+		let email = event.target.email.value;
+		let password = event.target.password.value;
+		let name = event.target.name.value;
+		let surname = event.target.surname.value;
 
-		console.log(register);
+		if (email && password && name && surname) {
+			dispatch({
+				...registerAction,
+				payload: {
+					email: email,
+					password: password,
+					name: name,
+					surname: surname,
+				}
+			});
+		}
 	}
 
 	if (register && register.success && JSON.parse(register.success) === true) {
@@ -77,27 +83,86 @@ export const SignupForm = () => {
 						</p>
 					</Grid>
 					<Grid item xs={12}>
-						<TextField fullWidth required name="email" type="email" label="Адрес электронной почты" />
+						<Field
+							component={CustomField}
+							label="Адрес электронной почты"
+							type="email"
+							name="email"
+							fullWidth
+						/>
 					</Grid>
-					<Grid container spacing={2}>
-						<Grid item xs={6} >
-							<TextField fullWidth required name="name" type="text" label="Имя" margin="normal" />
-						</Grid>
-						<Grid item xs={6} >
-							<TextField fullWidth required name="scondName" type="text" label="Фамилия" margin="normal" />
+					<Grid item xs={12} className={classes.gridTopMargin}>
+						<Grid container spacing={2}>
+							<Grid item xs={6}>
+								<Field
+									component={CustomField}
+									label="Имя"
+									type="name"
+									name="name"
+									fullWidth
+								/>
+							</Grid>
+							<Grid item xs={6} >
+								<Field
+									component={CustomField}
+									label="Фамилия"
+									type="surname"
+									name="surname"
+									fullWidth
+								/>
+							</Grid>
 						</Grid>
 					</Grid>
-					<Grid item xs={12} >
-						<TextField fullWidth required name="password" type="password" label="Пароль" margin="normal" />
+					<Grid item xs={12} className={classes.gridTopMargin}>
+						<Field
+							component={CustomField}
+							label="Пароль"
+							type="password"
+							name="password"
+							fullWidth
+						/>
 					</Grid>
 					<Grid item xs={12} align="right" className={classes.btnGrid}>
-						<Button type="submit" variant="contained" color="primary" data-testid="buttonLogin">
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							ata-testid="buttonLogin"
+							disabled={loading ? true : false}>
 							Зарегистрироваться
             </Button>
 					</Grid>
 				</Grid>
-
 			</form>
 		</Card>
 	);
 }
+
+const signUpValidator = (values) => {
+	const errors = {};
+
+	if (!values.email) {
+		errors.email = 'Введите адресс почты';
+	} else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+		errors.email = 'Адресс почты не правильный';
+	}
+
+	if (!values.name) {
+		errors.name = 'Введите имя';
+	}
+
+	if (!values.surname) {
+		errors.surname = 'Введите фамилию';
+	}
+
+	if (!values.password) {
+		errors.password = 'Введите пароль';
+	}
+
+	return errors;
+}
+
+export default reduxForm({
+	form: 'sign-up',
+	validate: signUpValidator
+})(SignupForm);

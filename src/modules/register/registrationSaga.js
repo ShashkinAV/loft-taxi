@@ -7,7 +7,7 @@ import {
 
 const host = 'https://loft-taxi.glitch.me';
 
-const postRegistration = (action) =>
+export const postRegistration = (action) =>
 	fetch(host + '/register', {
 		method: 'POST',
 		headers: {
@@ -17,14 +17,15 @@ const postRegistration = (action) =>
 	})
 		.then(response => response.json());
 
+export function* registrationSagaWorker(action) {
+	try {
+		const result = yield call(postRegistration, action);
+		yield put(fetchRegisterSuccess(result));
+	} catch (error) {
+		yield put(fetchRegisterFailure(error));
+	}
+}
+
 export function* registrationSaga() {
-	yield takeEvery(fetchRegisterRequest, function* (action) {
-		try {
-			const result = yield call(postRegistration, action);
-			console.log("registerSaga!")
-			yield put(fetchRegisterSuccess(result));
-		} catch (error) {
-			yield put(fetchRegisterFailure(error));
-		}
-	});
+	yield takeEvery(fetchRegisterRequest, registrationSagaWorker);
 }
