@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from "prop-types";
+import { Logo } from 'loft-taxi-mui-theme';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import {SignupForm} from './SignupForm';
-import { Logo } from 'loft-taxi-mui-theme';
+import { LoginForm } from '../Login/LoginForm';
+import { SignupForm } from '../Signup/SignupForm';
+
 
 const BackgroundURL = '../background.jpg';
 
@@ -20,28 +22,27 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const Signup = ({setRoute}) => {
+export const Auth = ({ isAuth }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.login}>
-       <Grid 
+      <Grid
         container
         direction="row"
         justify="center"
         alignItems="center">
-          <Grid item xs={3}>
-            <Logo white animated />
-          </Grid>
-          <Grid item xs={3}>
-            <SignupForm setRoute={setRoute}/>
-          </Grid>
-       </Grid>
+        <Grid item xs={3}>
+          <Logo white animated />
+        </Grid>
+        <Grid item xs={3}>
+          {isAuth ? <LoginForm /> : <SignupForm />}
+        </Grid>
+      </Grid>
     </div>
   );
 }
 
-Signup.propTypes = {
-  setRoute: PropTypes.func
+Auth.propTypes = {
+  isAuth: PropTypes.bool
 };
-

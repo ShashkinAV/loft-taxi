@@ -1,12 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { AppConsumer } from '../../App';
+import { getAuth, fetchAuthRequest } from '../../modules/auth';
+import history from '../../history';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -25,54 +27,62 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const LoginForm = ({setRoute}) => {
+export const LoginForm = () => {
   const classes = useStyles();
-  const goToRegistrForm = event => {
-    event.preventDefault();
-    setRoute("регистрация");
+
+  const auth = useSelector(getAuth, shallowEqual);
+  const authAction = useSelector(fetchAuthRequest, shallowEqual);
+
+  const dispatch = useDispatch();
+
+  if (auth && auth.success && JSON.parse(auth.success) === true) {
+    localStorage.setItem('authSuccess', auth.success);
+    localStorage.setItem('authToken', auth.token);
+    history.push('/map');
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    dispatch({
+      ...authAction,
+      payload: {
+        email: e.target.email.value,
+        password: e.target.password.value
+      }
+    });
   }
 
   return (
-    <AppConsumer>
-       {AppContext => {
-
-         const onSubmit = (e) => {
-          AppContext.login(e.target.email.value, e.target.password.value);
-         }
-
-         return (
-          <Card className={classes.card}>
-            <form  onSubmit={onSubmit}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Typography variant='h4' component='h1'>
-                    Войти
+    <Card className={classes.card}>
+      <form onSubmit={onSubmit}>
+        <Grid container>
+          <Grid item xs={12}>
+            <Typography variant='h4' component='h1'>
+              Войти
                   </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <p>
-                    Новый пользователь?{' '}
-                    <Link href="#" onClick={goToRegistrForm}>
-                    Зарегистрируйтесь
+          </Grid>
+          <Grid item xs={12}>
+            <p>
+              Новый пользователь?{' '}
+              <Link to={'/signup'} >
+                Зарегистрируйтесь
                     </Link>
-                  </p>
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField fullWidth required name="email" type="email" label="Имя пользователя"/>
-                </Grid>
-                <Grid item xs={12} >
-                  <TextField fullWidth required name="password" type="password" label="Пароль" margin="normal"/>
-                </Grid>
-                <Grid item xs={12} align="right" className={classes.btnGrid}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Войти
+            </p>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField fullWidth required name="email" type="email" label="Имя пользователя" />
+          </Grid>
+          <Grid item xs={12} >
+            <TextField fullWidth required name="password" type="password" label="Пароль" margin="normal" />
+          </Grid>
+          <Grid item xs={12} align="right" className={classes.btnGrid}>
+            <Button type="submit" variant="contained" color="primary">
+              Войти
                   </Button>
-                </Grid>
-              </Grid>
-            </form>
-          </Card>
-         )
-       }}
-    </AppConsumer>
-  );
+          </Grid>
+        </Grid>
+      </form>
+    </Card>
+  )
 }

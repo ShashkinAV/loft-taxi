@@ -1,5 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
+import { MCIcon } from 'loft-taxi-mui-theme';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
@@ -18,7 +20,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import DateFnsUtils from '@date-io/date-fns';
-import { MCIcon } from 'loft-taxi-mui-theme';
+import { getCard, getPostCard, fetchGetCardRequest, fetchPostCardRequest, } from '../../modules/card';
+
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -49,6 +52,11 @@ const useStyles = makeStyles(theme => ({
 export const ProfileForm = () => {
   const classes = useStyles();
 
+  const postCard = useSelector(getPostCard, shallowEqual);
+  const postCardAction = useSelector(fetchPostCardRequest, shallowEqual);
+
+  const dispatch = useDispatch();
+
   const [selectedDate, handleDateChange] = useState(new Date());
 
   const [values, setValues] = React.useState({
@@ -67,9 +75,24 @@ export const ProfileForm = () => {
     event.preventDefault();
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    dispatch({
+      ...postCardAction,
+      payload: {
+        cardNumber: e.target.cardNumber.value,
+        expiryDate: e.target.expiryDate.value,
+        cardName: e.target.userName.value,
+        cvc: e.target.cvs.value,
+        token: localStorage.getItem('authToken')
+      }
+    });
+  }
+
   return (
     <Card className={classes.card}>
-      <form>
+      <form onSubmit={onSubmit}>
         <Grid>
           <Grid item xs={12} align='center' className={classes.gridHeader}>
             <Typography variant='h4' component='h1'>
@@ -83,14 +106,14 @@ export const ProfileForm = () => {
             <Grid item xs={6} >
               <Paper elevation={3} className={classes.paper}>
                 <MCIcon />
-                <TextField 
-                  fullWidth 
+                <TextField
+                  fullWidth
                   required
                   placeholder="0000 0000 0000 0000"
-                  name="cardNumber" 
-                  type="text" 
-                  label="Номер карты:" 
-                  margin="normal"/>
+                  name="cardNumber"
+                  type="text"
+                  label="Номер карты:"
+                  margin="normal" />
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <DatePicker
                     placeholder="11/19"
@@ -102,7 +125,7 @@ export const ProfileForm = () => {
                     value={selectedDate}
                     onChange={handleDateChange}
                     margin="normal"
-                    fullWidth 
+                    fullWidth
                     required
                   />
                 </MuiPickersUtilsProvider>
@@ -110,43 +133,44 @@ export const ProfileForm = () => {
             </Grid>
             <Grid item xs={6} >
               <Paper elevation={3} className={classes.paper}>
-                <TextField 
-                  fullWidth 
-                  required 
-                  name="userName" 
-                  type="text" 
-                  label="Имя владельца:" 
+                <TextField
+                  fullWidth
+                  required
+                  name="userName"
+                  type="text"
+                  label="Имя владельца:"
                   placeholder="USER NAME"
-                  margin="normal"/>
-                  <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="cvs">
-                      CVS:{' '}
-                      <Tooltip title="3 последние цифры на оборотной стороне карты" arrow>
-                        <HelpOutlineIcon fontSize='small'/>
-                      </Tooltip>
-                    </InputLabel>
-                    <Input
-                      id="cvs"
-                      type={values.showPassword ? 'text' : 'password'}
-                      value={values.password}
-                      onChange={handleChange('password')}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
-                            {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  </FormControl>
+                  margin="normal" />
+                <FormControl margin="normal" fullWidth>
+                  <InputLabel htmlFor="cvs">
+                    CVS:{' '}
+                    <Tooltip title="3 последние цифры на оборотной стороне карты" arrow>
+                      <HelpOutlineIcon fontSize='small' />
+                    </Tooltip>
+                  </InputLabel>
+                  <Input
+                    id="cvs"
+                    name="cvs"
+                    type={values.showPassword ? 'text' : 'password'}
+                    value={values.password}
+                    onChange={handleChange('password')}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
               </Paper>
             </Grid>
           </Grid>
-          <Grid item xs={12}  align="center" className={classes.btnGrid}>
+          <Grid item xs={12} align="center" className={classes.btnGrid}>
             <Button type="submit" variant="contained" color="primary">
               Сохранить
             </Button>

@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import {ProfileForm} from './ProfileForm'
+import { ProfileForm } from './ProfileForm'
 
 const BackgroundURL = '../background.jpg';
 
@@ -23,7 +23,7 @@ export const Profile = () => {
   return (
     <Box className={classes.profile}>
       <Grid container direction="row" justify="center">
-        <ProfileForm/>
+        <ProfileForm />
       </Grid>
     </Box>
   );
